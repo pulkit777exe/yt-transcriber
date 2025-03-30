@@ -1,3 +1,7 @@
 youtube_transcript_api
 google-genai
 python-dotenv
+langchain
+time
+tqdm
+dotenv
