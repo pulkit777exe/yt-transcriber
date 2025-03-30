@@ -13,6 +13,26 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
+def summarise_transcript():
+    for chunk in tqdm(texts, desc="Summarizing", unit="chunk"):
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=f"{SYSTEM_PROMPT} {chunk}"
+            )
+            opt = f"{response.text}\n\n"
+            time.sleep(3)
+            sf.write(opt)
+
+def get_transcript(id):
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    output = ""
+    for index, x in tqdm(enumerate(transcript), desc="Transcribing", unit="words"): 
+        sentence = x['text']
+        start_timestamp = x['start']
+        duration = x["duration"]
+        output += f'{index + 1}.\n{start_timestamp:.3f} --> {duration + start_timestamp:.3f}\n{sentence}\n\n'
+    return output
+
 url = input("Enter the YouTube watch link: ") 
 print("Entered URL:", url)
 
@@ -23,14 +43,7 @@ else:
     raise ValueError("🚨Invalid YouTube URL")
 
 try:
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-    output = ""
-
-    for index, x in enumerate(transcript): 
-        sentence = x['text']
-        start_timestamp = x['start']
-        duration = x["duration"]
-        output += f'{index + 1}.\n{start_timestamp:.3f} --> {duration + start_timestamp:.3f}\n{sentence}\n\n'
+    output = get_transcript(video_id)
 
     downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads", "Transcriber")
     os.makedirs(downloads_folder, exist_ok=True)
@@ -71,14 +84,7 @@ try:
     )
 
     with open(summary_path, 'w', encoding='utf-8') as sf:
-        for chunk in tqdm(texts, desc="Summarizing", unit="chunk"):
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=f"{SYSTEM_PROMPT} {chunk}"
-            )
-            opt = f"{response.text}\n\n"
-            time.sleep(3)
-            sf.write(opt)
+        summarise_transcript()
 
     print("✅Summary saved to:", summary_path)
 
