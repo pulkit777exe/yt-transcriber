@@ -1,6 +1,7 @@
 import os
 import unittest
 from unittest.mock import patch, MagicMock
+from transcriber import get_transcript, summarise_transcript 
 # from 
 
 DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads", "Transcriber")
@@ -23,7 +24,7 @@ class TestTranscriber(unittest.TestCase):
             {"text": "Hello This is a test", "start": 2.0, "duration": 5.0}
         ]
 
-        save_transcript("dummy_video_id", self.output_path)
+        get_transcript("dummy_video_id", self.output_path)
         self.assertTrue(os.path.exists(self.output_path))
         with open(self.output_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -36,7 +37,7 @@ class TestTranscriber(unittest.TestCase):
         mock_ai_response.return_value = MagicMock(text = "This is a summary.")
 
         texts = ["Chunk 1 text","Chunk 2 text"]
-        generate_summary(texts.self.summary_path)
+        summarise_transcript(texts.self.summary_path)
 
         self.assertTrue(os.path.exists(self.summary_path))
         with open(self.summary_path, 'r', encoding='utf-8') as f:

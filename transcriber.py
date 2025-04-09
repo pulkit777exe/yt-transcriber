@@ -14,6 +14,7 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 def summarise_transcript():
+    print("This might take a while")
     for chunk in tqdm(texts, desc="Summarizing", unit="chunk"):
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
@@ -23,7 +24,7 @@ def summarise_transcript():
             time.sleep(3)
             sf.write(opt)
 
-def get_transcript(id):
+def get_transcript(video_id):
     transcript = YouTubeTranscriptApi.get_transcript(video_id)
     output = ""
     for index, x in tqdm(enumerate(transcript), desc="Transcribing", unit="words"): 
@@ -47,7 +48,7 @@ try:
 
     downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads", "Transcriber")
     os.makedirs(downloads_folder, exist_ok=True)
-    output_path = os.path.join(downloads_folder, "output.srt")
+    output_path = os.path.join(downloads_folder, "transcript.srt")
     summary_path = os.path.join(downloads_folder, "summarisedOutput.txt")
 
     with open(output_path, 'w', encoding='utf-8') as f:
