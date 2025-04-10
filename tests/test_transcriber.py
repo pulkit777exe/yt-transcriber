@@ -4,11 +4,11 @@ from unittest.mock import patch, MagicMock
 from transcriber import get_transcript, summarise_transcript 
 # from 
 
-DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads", "Transcriber")
+DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads", "Transcriber-CLI")
 
 class TestTranscriber(unittest.TestCase):
     def setUp(self):
-        self.output_path = os.path.join(DOWNLOAD_FOLDER, "output.srt")
+        self.output_path = os.path.join(DOWNLOAD_FOLDER, "transcript.srt")
         self.summary_path = os.path.join(DOWNLOAD_FOLDER, "summarisedOutput.txt")
 
     def tearDown(self):

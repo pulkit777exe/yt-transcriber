@@ -1,4 +1,3 @@
-```markdown
 # 🎥 YouTube Transcript & AI Summarizer CLI
 
 A command-line Python tool that extracts the transcript from a YouTube video and generates an AI-powered summary using **Google GenAI**. Outputs are saved directly to your **Downloads** folder for easy access.
@@ -111,5 +110,3 @@ Thanks to the open-source tools and the incredible GenAI platform by Google for 
 
 ---
 ---
-
-```
