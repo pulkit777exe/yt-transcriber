@@ -5,6 +5,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import time
 from tqdm import tqdm
+
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 
@@ -24,52 +25,64 @@ languages = [
 for index, lang in enumerate(languages):
     print(f"{index + 1}. {lang}")
 
-def language_case(choice):
-    switch = {
-        1: "You selected English.",
-        2: "You selected Mandarin Chinese.",
-        3: "You selected Hindi.",
-        4: "You selected Spanish.",
-        5: "You selected French.",
-        6: "You selected Modern Standard Arabic.",
-        7: "You selected Bengali.",
-        8: "You selected Russian.",
-        9: "You selected Portuguese.",
-        10: "You selected Urdu.",
-        11: "You selected Indonesian.",
-        12: "You selected German.",
-        13: "You selected Japanese.",
-        14: "You selected Nigerian Pidgin.",
-        15: "You selected Egyptian Arabic.",
-        16: "You selected Marathi.",
-        17: "You selected Telugu.",
-        18: "You selected Turkish.",
-        19: "You selected Tamil.",
-        20: "You selected Cantonese.",
-        21: "You selected Vietnamese.",
-        22: "You selected Wu Chinese.",
-        23: "You selected Tagalog.",
-        24: "You selected Korean.",
-        25: "You selected Farsi."
-    }
-    return switch.get(choice, "Invalid choice. Please select a number between 1 and 25.")
+langName = ""
+langCode = ""
 
-num = input("Enter the index of the language displayed above: ")
+def get_language_info(choice):
+    global langName, langCode
+    languages = {
+        1: ("English", "en"),
+        2: ("Mandarin Chinese", "zh-Hans"),
+        3: ("Hindi", "hi"),
+        4: ("Spanish", "es"),
+        5: ("French", "fr"),
+        6: ("Modern Standard Arabic", "ar"),
+        7: ("Bengali", "bn"),
+        8: ("Russian", "ru"),
+        9: ("Portuguese", "pt"),
+        10: ("Urdu", "ur"),
+        11: ("Indonesian", "id"),
+        12: ("German", "de"),
+        13: ("Japanese", "ja"),
+        14: ("Nigerian Pidgin", "kri"),
+        15: ("Egyptian Arabic", "ar"), 
+        16: ("Marathi", "mr"),
+        17: ("Telugu", "te"),
+        18: ("Turkish", "tr"),
+        19: ("Tamil", "ta"),
+        20: ("Cantonese", "zh-Hant"), 
+        21: ("Vietnamese", "vi"),
+        22: ("Wu Chinese", "zh-Hant"),
+        23: ("Tagalog", "fil"),
+        24: ("Korean", "ko"),
+        25: ("Farsi", "fa"),
+    }
+    language = languages.get(choice)
+    if language:
+        langName, langCode = language
+        return f"You selected {langName}. Language code: {langCode}"
+    else:
+        return "Invalid choice. Please select a number between 1 and 25."
+
+user_input = int(input("Enter a number (1-25) to select a language: "))
+print(get_language_info(user_input))
+
 
 SYSTEM_PROMPT = (
     "You are a helpful assistant that summarizes text. "
     "Please summarize the following content. This content can be a transcript of a YouTube video. "
     "Please summarize the content in a concise and informative manner. "
     "You may receive timestamps which you need to ignore and focus on the content and summarize it. "
-    f"Please do not include any timestamps in the summary. The summary should be in {language_case(num)} and easy to understand. "
+    f"Please do not include any timestamps in the summary. The summary should be in {langName} and easy to understand. "
     "Please do not include any personal opinions or comments in the summary. "
     "The summary should be factual, objective, concise, and to the point. "
     "Avoid unnecessary details or filler words."    
 )
 
 def summarise_transcript():
-    print("This might take a while")
-    for chunk in tqdm(texts, desc="Summarizing", unit="chunk"):
+    try:
+        print("This might take a while")
+        for chunk in tqdm(texts, desc="Summarizing", unit="chunk"):
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=f"{SYSTEM_PROMPT} {chunk}"
@@ -77,16 +90,22 @@ def summarise_transcript():
             opt = f"{response.text}\n\n"
             time.sleep(3)
             sf.write(opt)
+    except: 
+        print("🚨Error in summarising\n Please try after some time.")
 
 def get_transcript(video_id):
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
-    output = ""
-    for index, x in tqdm(enumerate(transcript), desc="Transcribing", unit=" words"): 
-        sentence = x['text']
-        start_timestamp = x['start']
-        duration = x["duration"]
-        output += f'{index + 1}.\n{start_timestamp:.3f} --> {duration + start_timestamp:.3f}\n{sentence}\n\n'
-    return output
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[langCode])
+        output = ""
+        for index, x in tqdm(enumerate(transcript), desc="Transcribing", unit=" words"): 
+            sentence = x['text']
+            start_timestamp = x['start']
+            duration = x["duration"]
+            output += f'{index + 1}.\n{start_timestamp:.3f} --> {duration + start_timestamp:.3f}\n{sentence}\n\n'
+        return output
+    except:
+        print("🚨An error occured\nThe transctipt you were expecting is not available")
+        exit(0)
 
 url = input("Enter the YouTube watch link: ") 
 print("Entered URL:", url)
