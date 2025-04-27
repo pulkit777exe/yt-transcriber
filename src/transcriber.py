@@ -15,7 +15,7 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 languages = [
-    "English", "Mandarin Chinese", "Hindi", "Spanish", "French",
+    "English", "Hindi", "Mandarin Chinese", "Spanish", "French",
     "Modern Standard Arabic", "Bengali", "Russian", "Portuguese", "Urdu",
     "Indonesian", "German", "Japanese", "Nigerian Pidgin", "Egyptian Arabic",
     "Marathi", "Telugu", "Turkish", "Tamil", "Cantonese",
@@ -32,8 +32,8 @@ def get_language_info(choice):
     global langName, langCode
     languages = {
         1: ("English", "en"),
-        2: ("Mandarin Chinese", "zh-Hans"),
-        3: ("Hindi", "hi"),
+        2: ("Hindi", "hi"),
+        3: ("Mandarin Chinese", "zh-Hans"),
         4: ("Spanish", "es"),
         5: ("French", "fr"),
         6: ("Modern Standard Arabic", "ar"),
@@ -69,15 +69,12 @@ print(get_language_info(user_input))
 
 
 SYSTEM_PROMPT = (
-    "You are a helpful assistant that summarizes text. "
-    "Please summarize the following content. This content can be a transcript of a YouTube video. "
-    "Please summarize the content in a concise and informative manner. "
-    "You may receive timestamps which you need to ignore and focus on the content and summarize it. "
-    f"Please do not include any timestamps in the summary. The summary should be in {langName} and easy to understand. "
-    "Please do not include any personal opinions or comments in the summary. "
-    "The summary should be factual, objective, concise, and to the point. "
-    "Avoid unnecessary details or filler words."    
+    "You are a helpful assistant that summarizes content, such as YouTube transcripts. "
+    f"Summarize factually and concisely in {langName}, avoiding timestamps, opinions, and filler. "
+    "You can be descriptive at times. "
+    "Focus on key points and ensure clarity."
 )
+
 
 def summarise_transcript():
     try:
@@ -139,8 +136,8 @@ try:
         raise ValueError("🚨Transcript file is empty!")
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100,
+        chunk_size=1800,
+        chunk_overlap=200,
         length_function=len,
         is_separator_regex=False
     )

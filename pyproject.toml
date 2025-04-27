@@ -14,3 +14,6 @@ dependencies = [
     "tqdm (>=4.67.1,<5.0.0)",
     "python-dotenv (>=1.1.0,<2.0.0)"
 ]
+[project.urls]
+Homepage = "https://github.com/pulkit777exe/yt-transcriber"
+Issues = "https://github.com/pulkit777exe/yt-transcriber/issues"
